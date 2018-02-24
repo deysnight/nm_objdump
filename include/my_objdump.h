@@ -32,5 +32,6 @@ int objdump(info_t *);
 int filesize(int);
 void print_header(info_t *);
 void print_content(info_t *);
+int get_flag(info_t *);
 
 #endif

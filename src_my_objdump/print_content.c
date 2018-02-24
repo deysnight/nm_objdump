@@ -33,6 +33,8 @@ void print_ascii_content(unsigned char *buff, int size)
 	while (i < 16) {
 		if (i < size && (buff[i] >= 32 && buff[i] <= 126))
 			tmp[i] = buff[i];
+		else if (i >= size)
+			tmp[i] = ' ';
 		else
 			tmp[i] = '.';
 		i++;
@@ -44,13 +46,14 @@ void print_address(info_t *info, int x, int i, int u)
 {
 	char useless[17];
 	int len = 0;
-	unsigned int section_end = info->shdr[x].sh_addr + info->shdr[x].sh_size;
+	unsigned int section_end = info->shdr[x].sh_addr
+		+ info->shdr[x].sh_size;
 	unsigned int address = info->shdr[x].sh_addr + i - u;
 
 	len = sprintf(useless, "%x", section_end);
 	if (len < 4)
 		len = 4;
-	printf(" %*x ", len, address);
+	printf(" %0*x ", len, address);
 }
 
 void print_section_content(info_t *info, int x)
@@ -58,9 +61,10 @@ void print_section_content(info_t *info, int x)
 	size_t i = 0;
 	int u = 0;
 	unsigned char buff[17];
-	
+
 	while (i < info->shdr[x].sh_size) {
-		buff[u] = *(((unsigned char*)info->data) + info->shdr[x].sh_offset + i);
+		buff[u] = *(((unsigned char *)info->data)
+			    + info->shdr[x].sh_offset + i);
 
 		u++;
 		if (u == 16) {
@@ -89,7 +93,8 @@ void print_content(info_t *info)
 		    info->shdr[i].sh_type != SHT_NOBITS &&
 		    info->shdr[i].sh_type != SHT_SYMTAB &&
 		    info->shdr[i].sh_type != SHT_STRTAB) {
-			printf("Contenu de la section %s\n", info->strtab + info->shdr[i].sh_name);
+			printf("Contents of section %s :\n",
+			       info->strtab + info->shdr[i].sh_name);
 			print_section_content(info, i);
 		}
 		i++;

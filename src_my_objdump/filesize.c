@@ -13,7 +13,7 @@ int filesize(int fd)
 
 	if (fstat(fd, &file_info))
 	{
-		fprintf(stderr, "Recuperation des informations du fichier impossible\n");
+		fprintf(stderr, "read file impossible\n");
 		return (-84);
 	}
 	return (file_info.st_size);

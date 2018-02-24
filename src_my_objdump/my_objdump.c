@@ -21,6 +21,19 @@ int elf_check_header(info_t *info)
 	return (0);
 }
 
+int fillandprint(info_t *info)
+{
+	info->elf = (Elf64_Ehdr *)info->data;
+	if (elf_check_header(info) == -1)
+		return (-84);
+	info->shdr = (Elf64_Shdr *)((char *)info->data +
+				    info->elf->e_shoff);
+	info->strtab = (char *)((char *)info->data
+				+ info->shdr[info->elf->e_shstrndx].sh_offset);
+	print_header(info);
+	print_content(info);
+	return (0);
+}
 
 int objdump(info_t *info)
 {
@@ -28,28 +41,19 @@ int objdump(info_t *info)
 
 	if ((fd = open(info->file, O_RDONLY)) > 0) {
 		info->size = filesize(fd);
-		
 		if (info->size < 0)
 			return (-84);
-		if ((info->data = mmap(0, (size_t)info->size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
-			fprintf(stderr, "Chargement du fichier en memoire impossible\n");
+		if ((info->data = mmap(0, (size_t)info->size, PROT_READ,
+				       MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+			fprintf(stderr, "Load file impossible\n");
 		else {
-			info->elf = (Elf64_Ehdr *)info->data;
-			if (elf_check_header(info) == -1)
+			if (fillandprint(info))
 				return (-84);
-			info->shdr = (Elf64_Shdr *)((char *)info->data + info->elf->e_shoff);
-			info->strtab = (char *)((char *)info->data
-						+ info->shdr[info->elf->e_shstrndx].sh_offset);
-			print_header(info);
-			print_content(info);
-			
 			close(fd);
 		}
-
-		
 	}
 	else {
-		fprintf(stderr, "Ouverture du fichier impossible\n");
+		fprintf(stderr, "objdump: 'a.out': No such file\n");
 		return (-84);
 	}
 	return (0);

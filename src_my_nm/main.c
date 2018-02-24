@@ -5,20 +5,12 @@
 ** HA my main.c
 */
 
-#include "nm.h"
+#include <stdio.h>
 
 int main(int ac, char **av)
 {
-	int i = 1;
-
-	if (ac < 2)
-		get_elf("a.out");
-	else {
-		while (i < ac) {
-			if (get_elf(av[i]) == 84)
-				return (84);
-			i++;
-		}
-	}
-	return (0);
+	(void)ac;
+	(void)av;
+	printf("je l'aurai bien fait ce projet\n");
+	printf("si il etait pas aussi pourri\n");
 }
